@@ -3,13 +3,25 @@ class FGOscript:
     def __init__(self, device_controller):
         self.dc = device_controller
 
-    def money(self, rounds=1):
+    def week(self, rounds=1, task=0):
+        """
+        :param rounds:
+        :param task: 0 for QP, 1 for EXP
+        :return:
+        """
+        pics = []
+        if task == 0:
+            pics = ['image/c_caster_qp1.png', 'image/c_caster_qp2.png', 'image/c_caster_qp3.png']
+        elif task == 1:
+            pics = ['image/c_caster_exp1.png', 'image/c_caster_exp2.png', 'image/c_caster_exp3.png']
+
         self.dc.take_screenshot()
         for i in range(rounds):
             print(f'Round {i + 1}')
             self.dc.find_and_tap('image/wizard.png')
             print('Find wizard.')
-            while not self.dc.find('image/c_caster_qp1.png') and not self.dc.find('image/c_caster_qp2.png') and not self.dc.find('image/c_caster_qp3.png'):
+
+            while not any(self.dc.find(pic) for pic in pics):
                 print('Waiting for friend list.')
                 self.dc.swipe_screen(800, 600, 800, 400, 500)
                 if self.dc.find('image/friend_end_list.png', threshold=0.92):
@@ -18,12 +30,8 @@ class FGOscript:
                     print('Find new friends.')
                     self.dc.find_and_tap('image/new_friends_check.png')
                     print('Find new friends check.')
-            if self.dc.find('image/c_caster_qp1.png'):
-                self.dc.find_and_tap('image/c_caster_qp1.png')
-            elif self.dc.find('image/c_caster_qp2.png'):
-                self.dc.find_and_tap('image/c_caster_qp2.png')
-            elif self.dc.find('image/c_caster_qp3.png'):
-                self.dc.find_and_tap('image/c_caster_qp3.png')
+            found_pic = next(pic for pic in pics if self.dc.find(pic))
+            self.dc.find_and_tap(found_pic)
             print('Find blue money chara.')
             if i == 0:
                 self.dc.find_and_tap('image/battle_start.png', threshold=0.7)
