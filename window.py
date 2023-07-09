@@ -1,12 +1,37 @@
 from scripts import *
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QComboBox, QPushButton, QSpinBox, QLabel
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QThread, Signal
+
+
+class RunScriptThread(QThread):
+    error_occurred = Signal(str)
+    script_finished = Signal()
+
+    def __init__(self, fgo_script, rounds, task):
+        super().__init__()
+        self.fgo_script = fgo_script
+        self.rounds = rounds
+        self.task = task
+
+    def run(self):
+        try:
+            self.fgo_script.week(self.rounds, self.task)
+        except Exception as e:
+            self.error_occurred.emit(str(e))
+        finally:
+            self.script_finished.emit()
+
+
+def handle_error(error_message):
+    # Here you can handle the error, for example, show a message box to the user.
+    print(f"An error occurred: {error_message}")
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.run_thread = None
         self.fgo_script = None
         self.match_counter = 0
 
@@ -40,7 +65,7 @@ class MainWindow(QMainWindow):
         self.main_widget.setLayout(self.layout)
         self.setCentralWidget(self.main_widget)
 
-    def count_and_add(self, template_path, threshold=0.8):
+    def count_and_add(self, template_path, threshold=0.97):
         """Count the number of times a template appears in a screenshot and add it to the match_counter."""
         self.fgo_script.dc.take_screenshot()
         main_image = cv2.imread('image/screenshot.png')
@@ -62,7 +87,15 @@ class MainWindow(QMainWindow):
     def run_fgo_script(self):
         task = self.task_select.currentData()
         rounds = self.rounds_select.value()
-        self.fgo_script.week(rounds, task)
+
+        self.run_thread = RunScriptThread(self.fgo_script, rounds, task)
+        self.run_thread.error_occurred.connect(handle_error)
+        self.run_thread.script_finished.connect(self.update_match_counter)
+        self.run_thread.start()
 
     def set_fgo_script(self, fgo_script):
         self.fgo_script = fgo_script
+
+    @Slot()
+    def update_match_counter(self):  # 新增
+        self.counter_label.setText(f"Current matches: {self.match_counter}")
