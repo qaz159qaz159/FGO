@@ -116,9 +116,6 @@ class DeviceController:
 
     # Rest of your functions
 
-    def print_hello_world(self):
-        print(self.device.shell("echo Hello World!"))
-
     def screenshot(self):
         self.device.shell('screencap -p /sdcard/screenshot.png')
         os.system('adb pull /sdcard/screenshot.png ./image/screenshot.png')

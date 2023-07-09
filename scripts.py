@@ -1,7 +1,12 @@
 import time
+import cv2
+import numpy as np
+from PySide6.QtCore import Signal, QObject
 class FGOscript:
-    def __init__(self, device_controller):
+    def __init__(self, device_controller, main_window):
         self.dc = device_controller
+        self.match_counter = 0
+        self.main_window = main_window
 
     def week(self, rounds=1, task=0):
         """
@@ -13,13 +18,14 @@ class FGOscript:
         if task == 0:
             pics = ['image/c_caster_qp1.png', 'image/c_caster_qp2.png', 'image/c_caster_qp3.png']
         elif task == 1:
-            pics = ['image/c_caster_exp1.png', 'image/c_caster_exp2.png', 'image/c_caster_exp3.png']
+            pics = ['image/c_caster_exp1.png', 'image/c_caster_exp2.png', 'image/c_caster_exp3.png',
+                    'image/c_caster_exp4.png']
 
         self.dc.take_screenshot()
         for i in range(rounds):
             print(f'Round {i + 1}')
             self.dc.find_and_tap('image/wizard.png')
-            print('Find wizard.')
+            print('Find caster.')
 
             while not any(self.dc.find(pic) for pic in pics):
                 print('Waiting for friend list.')
@@ -73,8 +79,12 @@ class FGOscript:
             print('Find end battle.')
             self.dc.find_and_tap('image/end_battle_2.png')
             print('Find end battle 2.')
+            self.main_window.count_and_add('image/material/cristal.png')
             self.dc.find_and_tap('image/end_battle_3.png')
             print('Find end battle 3.')
+            while not self.dc.find('image/next_fight.png'):
+                self.dc.tap(640, 500)
+
             self.dc.find_and_tap('image/next_fight.png')
             print('Find next fight.')
             time.sleep(10)
@@ -84,7 +94,3 @@ class FGOscript:
                 print('Find gold apple.')
                 self.dc.find_and_tap('image/recover_decide.png')
                 print('Find recover decide.')
-
-    @staticmethod
-    def counter():
-        pass
