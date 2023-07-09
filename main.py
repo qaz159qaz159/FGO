@@ -1,0 +1,97 @@
+from utils import load_key, connect_device, take_screenshot, find, find_and_tap, swipe_screen, tap, tap_skill
+import time
+
+
+def main():
+    """Main function to control the device."""
+    signer = load_key()
+    device = connect_device(signer)
+    take_screenshot(device)
+    for i in range(4):
+        print(f'Round {i+1}')
+        find_and_tap(device, 'image/wizard.png')
+        print('Find wizard.')
+        while not find(device, 'image/blue_money_chara.png'):
+            print('Waiting for friend list.')
+            swipe_screen(device, 800, 600, 800, 400, 500)
+            if find(device, 'image/friend_end_list.png', threshold=0.92):
+                print('Friend list end.')
+                find_and_tap(device, 'image/new_friends.png')
+                print('Find new friends.')
+                find_and_tap(device, 'image/new_friends_check.png')
+                print('Find new friends check.')
+        find_and_tap(device, 'image/blue_money_chara.png')
+        print('Find blue money chara.')
+        if i == 0:
+            find_and_tap(device, 'image/battle_start.png', threshold=0.7)
+            print('Find battle start.')
+        while not find(device, 'image/attack.png', threshold=0.7):
+            time.sleep(1)
+            pass
+        # tap(device, 50, 600, delay=5)
+        # tap(device, 150, 600, delay=1)
+        # tap(device, 640, 360, delay=5)
+        # tap(device, 250, 600, delay=1)
+        # tap(device, 640, 360, delay=5)
+        # tap(device, 400, 600, delay=5)
+        # tap(device, 450, 600, delay=5)
+        # tap(device, 550, 600, delay=5)
+        # tap(device, 700, 600, delay=5)
+        # tap(device, 800, 600, delay=1)
+        # tap(device, 640, 360, delay=5)
+        # tap(device, 900, 600, delay=1)
+        # tap(device, 640, 360, delay=5)
+        tap_skill(device, 1, 1, choose=0, delay=1)
+        tap_skill(device, 1, 2, choose=2, delay=1)
+        tap_skill(device, 1, 3, choose=2, delay=1)
+        tap_skill(device, 2, 1, choose=0, delay=1)
+        tap_skill(device, 2, 2, choose=0, delay=1)
+        tap_skill(device, 2, 3, choose=0, delay=1)
+        tap_skill(device, 3, 1, choose=0, delay=1)
+        tap_skill(device, 3, 2, choose=2, delay=1)
+        tap_skill(device, 3, 3, choose=2, delay=1)
+        find_and_tap(device, 'image/attack.png')
+        print('Find attack.')
+        tap(device, 640, 300)
+        tap(device, 640, 500)
+        tap(device, 850, 500)
+        take_screenshot(device)
+        find_and_tap(device, 'image/attack.png')
+        print('Find attack.')
+        tap(device, 640, 300)
+        tap(device, 640, 500)
+        tap(device, 850, 500)
+        take_screenshot(device)
+        find_and_tap(device, 'image/people_skill.png')
+        print('Find people skill.')
+        tap(device, 900, 300)
+        find_and_tap(device, 'image/attack.png')
+        print('Find attack.')
+        tap(device, 640, 300)
+        tap(device, 640, 500)
+        tap(device, 850, 500)
+        find_and_tap(device, 'image/end_battle.png')
+        print('Find end battle.')
+        find_and_tap(device, 'image/end_battle_2.png')
+        print('Find end battle 2.')
+        find_and_tap(device, 'image/end_battle_3.png')
+        print('Find end battle 3.')
+        find_and_tap(device, 'image/next_fight.png')
+        print('Find next fight.')
+        time.sleep(10)
+        if find(device, 'image/AP_recover.png', threshold=0.8):
+            print('Find AP recover.')
+            find_and_tap(device, 'image/gold_apple.png', threshold=0.7)
+            print('Find gold apple.')
+            find_and_tap(device, 'image/recover_decide.png')
+            print('Find recover decide.')
+
+def screenshot():
+    """Take screenshot."""
+    signer = load_key()
+    device = connect_device(signer)
+    take_screenshot(device)
+
+if __name__ == '__main__':
+    main()
+    # screenshot()
