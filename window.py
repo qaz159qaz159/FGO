@@ -12,6 +12,7 @@ class RunScriptThread(QThread):
         self.fgo_script = fgo_script
         self.rounds = rounds
         self.task = task
+        self.stop_flag = False
 
     def run(self):
         try:
@@ -61,9 +62,21 @@ class MainWindow(QMainWindow):
         self.run_button.clicked.connect(self.run_fgo_script)
         self.layout.addWidget(self.run_button)
 
+        self.stop_button = QPushButton("Stop FGO Script")
+        self.stop_button.clicked.connect(self.stop_fgo_script)
+        self.layout.addWidget(self.stop_button)
+
+        self.screenshot_button = QPushButton("Take Screenshot")  # 新增
+        self.screenshot_button.clicked.connect(self.take_screenshot)  # 新增
+        self.layout.addWidget(self.screenshot_button)  # 新增
+
         self.main_widget = QWidget()
         self.main_widget.setLayout(self.layout)
         self.setCentralWidget(self.main_widget)
+
+    @Slot()
+    def take_screenshot(self):  # 新增
+        self.fgo_script.dc.take_screenshot()  # 新增
 
     def count_and_add(self, template_path, threshold=0.97):
         """Count the number of times a template appears in a screenshot and add it to the match_counter."""
@@ -93,9 +106,14 @@ class MainWindow(QMainWindow):
         self.run_thread.script_finished.connect(self.update_match_counter)
         self.run_thread.start()
 
+    @Slot()
+    def stop_fgo_script(self):
+        if self.run_thread is not None:
+            self.run_thread.stop_flag = True
+
     def set_fgo_script(self, fgo_script):
         self.fgo_script = fgo_script
 
     @Slot()
-    def update_match_counter(self):  # 新增
+    def update_match_counter(self):
         self.counter_label.setText(f"Current matches: {self.match_counter}")
