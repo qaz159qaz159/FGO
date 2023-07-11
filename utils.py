@@ -99,6 +99,37 @@ class DeviceController:
         time.sleep(0.1)
         self.device.shell(f'input tap {x} {y}')
         time.sleep(2)
+        
+    def tap_people_skill(self, skill, choose=0, change=False, delay=0.5):
+        """ Default: Orange Cloth, change: 3, 1 """
+        self.find_and_tap('image/people_skill.png')
+        if skill == 1:
+            self.tap(900, 300, delay=2)
+        elif skill == 2:
+            self.tap(1000, 300, delay=2)
+        elif skill == 3:
+            self.tap(1100, 300)
+            self.tap(700, 360) # 後面第一隻
+            self.tap(500, 360) # 前面第三隻
+            self.tap(640, 600, delay=0.1) # 確認
+            self.tap(640, 600, delay=3)
+    
+    def tap_QQ_skill(self, skill, addition, choose=0, delay=0.5):
+        """ Default: Addition """
+        if skill == 1:
+            self.tap(400, 600)
+            self.tap(850, 420, delay=0.1)
+            self.tap(850, 420, delay=2)
+        elif skill == 2:
+            self.tap(450, 600, delay=0.1)
+            self.tap(850, 420, delay=0.1)
+            self.tap(640, 360, delay=0.1)
+            self.tap(640, 360, delay=2)
+        elif skill == 3:
+            self.tap(550, 600)  # 庫庫爾坎三技能
+            self.tap(850, 420, delay=0.1)
+            self.tap(850, 420, delay=2)
+            
 
     def find(self, template_path, threshold=0.8):
         """Find a template in a screenshot."""
